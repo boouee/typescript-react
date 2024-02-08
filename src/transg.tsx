@@ -38,7 +38,7 @@ export default function App() {
     <>
       <div
         ref={useDraggable()[0]}
-        id="root"
+        id="Root"
         className="draggable"
         //onMouseMove={handleOverlapCheck}
         style={{
