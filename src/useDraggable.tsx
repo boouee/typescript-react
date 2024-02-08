@@ -3,7 +3,7 @@ import * as React from "react";
 export default function useDraggable() {
   const [node, setNode] = React.useState<HTMLElement>();
   const [filter, setFilter] = React.useState("");
-  const [cursor, setCursor] = React.useState("");
+  const [check, setCheck] = React.useState(false);
   const [{ dx, dy }, setOffset] = React.useState({
     dx: 0,
     dy: 0,
@@ -19,8 +19,10 @@ export default function useDraggable() {
         x: e.clientX - dx,
         y: e.clientY - dy,
       };
+      setCheck(false);
       //setFilter("drop-shadow(0 0 7px #1b5e20)");
       //setCursor("grabbing");
+      node!.className = "active";
       node!.style.filter = "drop-shadow(0 0 7px #1b5e20)";
       const handleMouseMove = (e: React.MouseEvent) => {
         const dx = e.clientX - startPos.x;
@@ -28,7 +30,7 @@ export default function useDraggable() {
         setOffset({ dx, dy });
         node!.style.filter = "drop-shadow(0 0 15px #1b5e20)";
         node!.className = "active";
-        OverlapCheck(e);
+        console.log(OverlapCheck(e));
       };
 
       const handleMouseUp = () => {
@@ -36,7 +38,12 @@ export default function useDraggable() {
         document.removeEventListener("mousemove", handleMouseMove as any);
         document.removeEventListener("mouseup", handleMouseUp);
         node!.style.filter = "";
+        if (OverlapCheck(e)) {
+          console.log("overlap__");
+          document.getElementById("Root")?.appendChild(node!);
+        }
         node!.className = "draggable";
+        //setCheck(false);
       };
 
       document.addEventListener("mousemove", handleMouseMove as any);
@@ -74,10 +81,9 @@ export default function useDraggable() {
   React.useEffect(() => {
     if (node) {
       node.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
-      //node.style.filter = filter;
-      //node.style.cursor = cursor;
+      //console.log(check);
     }
-  }, [node, dx, dy]);
+  }, [node, dx, dy, check]);
 
   React.useEffect(() => {
     if (!node) {
@@ -94,24 +100,24 @@ export default function useDraggable() {
   return [ref];
 }
 
-export const OverlapCheck = (e: React.MouseEvent) => {
+export function OverlapCheck(e: React.MouseEvent) {
   const array = Array.from(document.querySelectorAll(".draggable"));
-  array.map((item) => {
-    //console.log((e.target as Element).id, (item as Element).id);
+  //const [condition, setCondition] = React.useState(false);
+  var condition = false;
+  for (let item of array) {
     let dragged = (e.target as Element).getBoundingClientRect();
     let target = (item as Element).getBoundingClientRect();
-    //console.log((e.target as Element).id, (item as Element).id);
-    console.log(dragged.right, target.left);
-    console.log((e.target as Element).className, item.className);
+
     if (
+      e &&
       dragged.right > target.left &&
       dragged.left < target.right &&
       dragged.top < target.bottom &&
       dragged.bottom > target.top
     ) {
-      console.log("touched");
-      return true;
+      //console.log("touched_");
+      condition = true;
     }
-  });
-  return false;
-};
+  }
+  return condition;
+}
