@@ -22,9 +22,17 @@ export default function useDraggable() {
       setCheck(false);
       //setFilter("drop-shadow(0 0 7px #1b5e20)");
       //setCursor("grabbing");
-      node!.className = "active";
+      if (node!.className != "attached") {
+        node!.className = "active";
+      }
       node!.style.filter = "drop-shadow(0 0 7px #1b5e20)";
       const handleMouseMove = (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (node!.className == "attached") {
+          node!.parentNode?.removeChild(node!);
+          document.getElementsByClassName("container")[0]?.appendChild(node!);
+          node!.className = "active";
+        }
         const dx = e.clientX - startPos.x;
         const dy = e.clientY - startPos.y;
         setOffset({ dx, dy });
@@ -41,8 +49,11 @@ export default function useDraggable() {
         if (OverlapCheck(e)) {
           console.log("overlap__");
           document.getElementById("Root")?.appendChild(node!);
+          node!.style.transform = `translate3d(54px, -101px, 0)`;
+          node!.className = "attached";
+        } else {
+          node!.className = "draggable";
         }
-        node!.className = "draggable";
         //setCheck(false);
       };
 
