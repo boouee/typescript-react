@@ -2,7 +2,7 @@ import * as React from "react";
 import Grow from "@mui/material/Grow";
 import ListItem from "@mui/material/ListItem";
 import { TransitionGroup } from "react-transition-group";
-import { Root, Main, Collapsable, GridBox } from "./components/items";
+import { Root, Main, Collapsable} from "./components/items";
 import useDraggable from "./useDraggable";
 import OptionItem from "./components/options";
 import { SelectChangeEvent } from "@mui/material/Select";
