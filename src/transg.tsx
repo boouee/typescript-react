@@ -1,84 +1,131 @@
 import * as React from "react";
-import Collapse from "@mui/material/Collapse";
+import Grow from "@mui/material/Grow";
 import ListItem from "@mui/material/ListItem";
 import { TransitionGroup } from "react-transition-group";
-import { Root, Main, Collapsable } from "./components/items";
+import { Root, Main, Collapsable, GridBox } from "./components/items";
 import useDraggable from "./useDraggable";
 import OptionItem from "./components/options";
 import { SelectChangeEvent } from "@mui/material/Select";
+import data from "./config.json";
 
-const FRUITS = ["10", "20", "30", "40", "50"];
-
+//const [currentOption, setCurrentOption] = React.useState();
+const { children, ...currentOption } = data;
 interface RenderItemOptions {
   item: string;
-  handleRemoveFruit: (item: string) => void;
+  handleAddItem: (event: SelectChangeEvent) => void;
 }
 
-export default function App() {
-  const [items, setItems] = React.useState(FRUITS.slice(0, 2));
-  const handleAddItem = (event: SelectChangeEvent) => {
-    setItems((prev) => [...prev, event.target.value]);
-  };
-
-  const handleRemoveFruit = (item: string) => {
-    setItems((prev) => [...prev.filter((i) => i !== item)]);
-  };
-
-  function renderItem({ item, handleRemoveFruit }: RenderItemOptions) {
-    return (
-      <ListItem style={{ width: "130px" }}>
+function renderItem({ item, handleAddItem }: RenderItemOptions) {
+  return (
+    <Grow
+      style={{
+        width: "130px",
+        float: "left",
+        gridRow: 1,
+      }}
+      key={JSON.parse(JSON.stringify(item)).id}
+    >
+      <div>
         <Collapsable />
-        {/*
-        <OptionItem func={handleAddItem} label={item} value={item} />
-    */}
-      </ListItem>
-    );
+        <OptionItem
+          func={handleAddItem}
+          props={item}
+          style={{ userSelect: "none" }}
+        />
+      </div>
+    </Grow>
+  );
+}
+
+export function nest(array: any[]) {
+  if (array.length == 1) {
+    //console.log("last json : ", array);
+    return array;
+  } else {
+    console.log("array[-2]: ", array.length, array[array.length - 2]);
+    array[array.length - 2] = JSON.stringify({
+      ...JSON.parse(array[array.length - 2]),
+      children: JSON.parse(array[array.length - 1]),
+    });
+    console.log("json: ", array);
+    return nest(array.slice(0, array.length - 1));
   }
+}
+
+export default function App({ json }: any) {
+  const [current, setCurrent] = React.useState(JSON.stringify(data));
+  const [items, setItems] = React.useState([""].splice(0, 0));
+  const [output, setOutput] = React.useState(["{}"]);
+
+  const handleAddItem = (event: SelectChangeEvent) => {
+    console.log("target value: ", event.target.value);
+    console.log("current before: ", JSON.parse(current));
+    const child =
+      JSON.parse(current).type == "dropdown"
+        ? JSON.parse(current).children.find(
+            (i: any) => i.v == event.target.value,
+          )!.c
+        : JSON.parse(current).children == undefined
+          ? null
+          : JSON.parse(current).children[0];
+
+    setCurrent(JSON.stringify(child));
+    console.log("current after: ", JSON.parse(current));
+    console.log("child: ", child);
+    delete child.children;
+    if (child != null) {
+      setItems((prev) => [...prev, child]);
+    }
+    //delete child.options;
+    const newOutput = [...output, JSON.stringify(child)];
+
+    //console.log(output);
+    setOutput(newOutput);
+    console.log(nest(newOutput));
+    json(nest(newOutput));
+  };
+
   return (
     <>
       <div
         ref={useDraggable()[0]}
         id="Root"
         className="draggable"
-        //onMouseMove={handleOverlapCheck}
         style={{
           cursor: "grab",
           width: "62px",
           height: "92px",
-          borderStyle: "dotted",
         }}
       >
         <Root />
       </div>
+
       <div
         ref={useDraggable()[0]}
-        style={{ cursor: "grab" }}
+        style={{ cursor: "grab", position: "relative" }}
         className="draggable"
       >
-        <TransitionGroup style={{ display: "flex" }}>
-          <ListItem
+        <TransitionGroup
+          style={{ display: "grid", width: String(132 * items.length) + "px" }}
+        >
+          <div
             style={{
               width: "132px",
               height: "100px",
-              borderStyle: "dotted",
+              gridRow: 1,
             }}
-            //onDrag={handleOverlapCheck}
-
             id="main"
           >
             <Main />
             <OptionItem
               func={handleAddItem}
-              label={"Условие"}
-              value={0}
-              type={0}
+              props={currentOption!}
+              disabled={false}
+              style={{ userSelect: "none" }}
             />
-          </ListItem>
-          {items.map((item) => (
-            <Collapse orientation="horizontal" key={item}>
-              {renderItem({ item, handleRemoveFruit })}
-            </Collapse>
-          ))}
+          </div>
+
+          {items.map((item) => renderItem({ item, handleAddItem }))}
         </TransitionGroup>
       </div>
     </>
