@@ -48,7 +48,7 @@ export function nest(array: any[]) {
       children: JSON.parse(array[array.length - 1]),
     });
     console.log("json: ", array);
-    return nest(array.slice(0, array.length - 1)) as any;
+    return nest(array.slice(0, array.length - 1));
   }
 }
 
