@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import SplitPane, { Pane } from "split-pane-react";
 import JsonView from "@uiw/react-json-view";
+import { darkTheme } from "@uiw/react-json-view/dark";
+import { lightTheme } from "@uiw/react-json-view/light";
 import "react-json-view-lite/dist/index.css";
 import "split-pane-react/esm/themes/default.css";
-import useDraggable from "./useDraggable";
-import { Root, Main, Collapsable } from "./components/items";
-import ListItem from "@mui/material/ListItem";
-import { TransitionGroup } from "react-transition-group";
 import App from "./transg";
 import data from "./data.json";
 
@@ -15,24 +13,27 @@ export default function Screen() {
 
   const layoutCSS = {
     height: "100%",
-    display: "flex",
-
-    //justifyContent: "center",
   };
-
+  const [json, setJson] = React.useState("{}");
   return (
     <div style={{ height: 1000 }}>
       <SplitPane
         split="vertical"
         sizes={sizes}
-        onChange={setSizes}
+        onChange={() => null}
         sashRender={() => null}
       >
         <Pane minSize={"60%"} maxSize="60%">
           <div
-            style={{ ...layoutCSS, background: "#ddd", alignItems: "center" }}
+            className="container"
+            style={{
+              ...layoutCSS,
+              background: "#ddd",
+              //alignItems: "center",
+              border: "1px solid black",
+            }}
           >
-            <App />
+            <App json={setJson} />
           </div>
         </Pane>
         <div
@@ -42,7 +43,7 @@ export default function Screen() {
             backgroundColor: "#000000",
           }}
         >
-          <JsonView value={data} />
+          <JsonView value={JSON.parse(json)} style={darkTheme} />
         </div>
       </SplitPane>
     </div>
