@@ -40,7 +40,7 @@ function renderItem({ item, handleAddItem }: RenderItemOptions) {
 export function nest(array: any[]) {
   if (array.length == 1) {
     //console.log("last json : ", array);
-    return array;
+    return array[0] as any;
   } else {
     console.log("array[-2]: ", array.length, array[array.length - 2]);
     array[array.length - 2] = JSON.stringify({
@@ -48,7 +48,7 @@ export function nest(array: any[]) {
       children: JSON.parse(array[array.length - 1]),
     });
     console.log("json: ", array);
-    return nest(array.slice(0, array.length - 1));
+    return nest(array.slice(0, array.length - 1)) as any;
   }
 }
 
