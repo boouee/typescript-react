@@ -71,7 +71,7 @@ function OptionType({ func, props, disabled }: any) {
 export default function OptionItem({ func, props, disabled }: any) {
   return (
     <FormControl
-      sx={{ m: 1, minWidth: 100 }}
+      sx={{ m: 1, minWidth: 99 }}
       size="small"
       style={{
         position: "absolute",
