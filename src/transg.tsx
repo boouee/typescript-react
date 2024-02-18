@@ -62,7 +62,7 @@ export default function Condition({ json }: any) {
           )!.c
         : (JSON.parse(current).children == undefined
           ? null
-          : JSON.parse(current).children[0]);
+          : JSON.parse(current).children[0]!.c);
 
     setCurrent(JSON.stringify(child));
     delete child.children;
