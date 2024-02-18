@@ -65,7 +65,7 @@ export default function Condition({ json }: any) {
           : JSON.parse(current).children[0];
 
     setCurrent(JSON.stringify(child));
-    delete child.children;
+    //delete child.children;
     if (child != null) {
       setItems((prev) => [...prev, child]);
     }
