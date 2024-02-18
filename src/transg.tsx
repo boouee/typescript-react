@@ -60,9 +60,9 @@ export default function Condition({ json }: any) {
         ? JSON.parse(current).children.find(
             (i: any) => i.v == event.target.value,
           )!.c
-        : JSON.parse(current).children == undefined
+        : (JSON.parse(current).children == undefined
           ? null
-          : JSON.parse(current).children[0];
+          : JSON.parse(current).children[0]);
 
     setCurrent(JSON.stringify(child));
     //delete child.children;
