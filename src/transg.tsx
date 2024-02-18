@@ -65,7 +65,7 @@ export default function Condition({ json }: any) {
           : JSON.parse(current).children[0]);
 
     setCurrent(JSON.stringify(child));
-    //delete child.children;
+    delete child.children;
     if (child != null) {
       setItems((prev) => [...prev, child]);
     }
@@ -99,6 +99,7 @@ export default function Condition({ json }: any) {
             disabled={false}
             style={{ userSelect: "none" }}
           />
+        {child}
         </div>
 
         {items.map((item) => renderItem({ item, handleAddItem }))}
