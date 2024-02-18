@@ -69,7 +69,8 @@ export default function Condition({ json }: any) {
     if (child != null) {
       setItems((prev) => [...prev, child]);
     }
-    const newOutput = [...output, JSON.stringify(child)];
+    const lastOutput = { id: child.id, type: child.type}
+    const newOutput = [...output, JSON.stringify(lastOutput)];
     setOutput(newOutput);
     json(nest(newOutput));
   };
