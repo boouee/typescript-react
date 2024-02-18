@@ -99,7 +99,7 @@ export default function Condition({ json }: any) {
             disabled={false}
             style={{ userSelect: "none" }}
           />
-        {current}
+        
         </div>
 
         {items.map((item) => renderItem({ item, handleAddItem }))}
