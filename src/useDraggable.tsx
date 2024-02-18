@@ -15,13 +15,24 @@ export default function useDraggable() {
 
   const handleMouseDown = React.useCallback(
     (e: React.MouseEvent) => {
+      console.log(
+        Number(node!.style.transform.match(/-?[\d.]+/g)?.[1]),
+        node!.style.transform,
+      );
       const startPos = {
-        x: e.clientX - dx,
-        y: e.clientY - dy,
+        x:
+          e.clientX -
+          (node!.className == "draggable"
+            ? dx
+            : Number(node!.style.transform.match(/-?[\d.]+/g)?.[1])),
+        y:
+          e.clientY -
+          (node!.className == "draggable"
+            ? dy
+            : Number(node!.style.transform.match(/-?[\d.]+/g)?.[2])),
       };
       setCheck(false);
-      //setFilter("drop-shadow(0 0 7px #1b5e20)");
-      //setCursor("grabbing");
+
       if (node!.className != "attached") {
         node!.className = "active";
       }
@@ -38,7 +49,7 @@ export default function useDraggable() {
         setOffset({ dx, dy });
         node!.style.filter = "drop-shadow(0 0 15px #1b5e20)";
         node!.className = "active";
-        console.log(OverlapCheck(e));
+        //console.log(OverlapCheck(e));
       };
 
       const handleMouseUp = () => {
@@ -46,11 +57,11 @@ export default function useDraggable() {
         document.removeEventListener("mousemove", handleMouseMove as any);
         document.removeEventListener("mouseup", handleMouseUp);
         node!.style.filter = "";
-        if (OverlapCheck(e)) {
+        if (OverlapCheck(e).condition) {
           console.log("overlap__");
-          document.getElementById("Root")?.appendChild(node!);
-          node!.style.transform = `translate3d(54px, -101px, 0)`;
-          node!.className = "attached";
+          //document.getElementById("Root")?.appendChild(node!);
+          //node!.style.transform = `translate3d(54px, -101px, 0)`;
+          node!.className = OverlapCheck(e).base!.id;
         } else {
           node!.className = "draggable";
         }
@@ -92,7 +103,11 @@ export default function useDraggable() {
   React.useEffect(() => {
     if (node) {
       node.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
-      //console.log(check);
+      for (let i of Array.from(
+        document.getElementsByClassName(`.${CSS.escape(node.id)}`),
+      ) as HTMLElement[]) {
+        i.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+      }
     }
   }, [node, dx, dy, check]);
 
@@ -114,6 +129,7 @@ export default function useDraggable() {
 export function OverlapCheck(e: React.MouseEvent) {
   const array = Array.from(document.querySelectorAll(".draggable"));
   //const [condition, setCondition] = React.useState(false);
+  var base;
   var condition = false;
   for (let item of array) {
     let dragged = (e.target as Element).getBoundingClientRect();
@@ -128,7 +144,8 @@ export function OverlapCheck(e: React.MouseEvent) {
     ) {
       //console.log("touched_");
       condition = true;
+      base = item;
     }
   }
-  return condition;
+  return { condition: condition, base: base };
 }

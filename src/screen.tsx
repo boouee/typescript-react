@@ -2,12 +2,18 @@ import React, { useState } from "react";
 import SplitPane, { Pane } from "split-pane-react";
 import JsonView from "@uiw/react-json-view";
 import { darkTheme } from "@uiw/react-json-view/dark";
-import { lightTheme } from "@uiw/react-json-view/light";
+import { Root, Main, Collapsable } from "./components/items";
 import "react-json-view-lite/dist/index.css";
 import "split-pane-react/esm/themes/default.css";
-import App from "./transg";
+import Condition from "./transg";
+import useDraggable from "./useDraggable";
 import data from "./data.json";
+import { ReactElement } from "react";
 
+const Piece = ({ item }: { item: React.ReactNode }) => {
+  //const { childComp } = item!;
+  return <div ref={useDraggable()[0]}>{item}</div>;
+};
 export default function Screen() {
   const [sizes, setSizes] = useState([window.innerWidth * 0.6, "40%", "auto"]);
 
@@ -29,11 +35,11 @@ export default function Screen() {
             style={{
               ...layoutCSS,
               background: "#ddd",
-              //alignItems: "center",
               border: "1px solid black",
             }}
           >
-            <App json={setJson} />
+            <Piece item={Root() as React.ReactNode} />
+            <Condition json={setJson} />
           </div>
         </Pane>
         <div
